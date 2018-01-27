@@ -82,48 +82,6 @@ void matrix()
         }
 }
 
-void rain()
-{
-
-}
-
-void fadeall()
-{
-    for (uint16_t i = 0; i < NUM_LEDS; ++i) {
-        leds[i].nscale8(250);
-    }
-}
-
-void cylon()
-{
-	static uint8_t hue = 0;
-	// First slide the led in one direction
-	for(int i = 0; i < NUM_LEDS; i++) {
-		// Set the i'th led to red
-		leds[i] = CHSV(hue++, 255, 255);
-		// Show the leds
-		FastLED.show();
-		// now that we've shown the leds, reset the i'th led to black
-		// leds[i] = CRGB::Black;
-		fadeall();
-		// Wait a little bit before we loop around and do it again
-		delay(10);
-	}
-
-	// Now go in the other direction.
-	for(int i = (NUM_LEDS)-1; i >= 0; i--) {
-		// Set the i'th led to red
-		leds[i] = CHSV(hue++, 255, 255);
-		// Show the leds
-		FastLED.show();
-		// now that we've shown the leds, reset the i'th led to black
-		// leds[i] = CRGB::Black;
-		fadeall();
-		// Wait a little bit before we loop around and do it again
-		delay(10);
-	}
-}
-
 void confetti(uint8_t probability)
 {
     static uint8_t hue = 0;
@@ -158,6 +116,11 @@ void tester()
     FastLED.show();
 }
 
+void flashlight()
+{
+    fill_solid(leds, NUM_LEDS, CRGB::White);
+}
+
 void setup()
 {
     Serial.begin(115200);
@@ -181,53 +144,75 @@ void setup()
 
 void loop()
 {
-    // static uint32_t tsLastFrame = 0;
-    static uint8_t control_value = 100;
-
+    static IMUOrientation currentOrientation = IMUORIENTATION_UNKNOWN;
     imu.readAcc();
 
-    // speed = max(xn * 100, 0);
-    // scale = max(yn * 400, 0);
-    //
-    // char report[80];
-    // snprintf(report, sizeof(report), "A: %3d %3d %3d", (int16_t)(xn * 100), (int16_t)(yn * 100), (int16_t)(zn * 100));
-    // oled.clearDisplay();
-    // oled.setCursor(0, 0);
-    //
-    // oled.println(report);
-    // oled.display();
+    EVERY_N_MILLIS(500) {
+        IMUOrientation newOrientation = imu.getOrientation();
 
-     EVERY_N_MILLIS(500) {
-         Serial.print("ax=");
-         Serial.print(imu.a.x);
-         Serial.print(" ay=");
-         Serial.print(imu.a.y);
-         Serial.print(" az=");
-         Serial.print(imu.a.z);
-         Serial.print(" orientation=");
-         Serial.println(imu.getOrientation());
-         imu.debugOrientationCounters();
-     }
+        if (newOrientation != currentOrientation && newOrientation != IMUORIENTATION_UNKNOWN) {
+            currentOrientation = newOrientation;
+        }
+    }
 
-//     EVERY_N_MILLIS(5) {
-//         ballgame_render();
-//         FastLED.show();
+    switch (currentOrientation) {
+        case IMUORIENTATION_VERTICAL_NORMAL:
+            EVERY_N_MILLIS(66) {
+                matrix();
+                FastLED.show();
+            }
+            break;
+
+        case IMUORIENTATION_VERTICAL_90CW:
+            EVERY_N_MILLIS(33) {
+                confetti(30);
+                FastLED.show();
+            }
+            break;
+
+        case IMUORIENTATION_VERTICAL_90CCW:
+            EVERY_N_MILLIS(16) {
+                animate_noise(5, 100);
+                FastLED.show();
+            }
+            break;
+
+        case IMUORIENTATION_VERTICAL_180:
+            break;
+
+        case IMUORIENTATION_HORIZONTAL_TOP:
+            EVERY_N_MILLIS(5) {
+                ballgame_render();
+                FastLED.show();
+            }
+            break;
+
+        case IMUORIENTATION_HORIZONTAL_BOTTOM:
+            EVERY_N_MILLIS(33) {
+                flashlight();
+                FastLED.show();
+            }
+            break;
+
+        case IMUORIENTATION_UNKNOWN:
+            EVERY_N_MILLIS(66) {
+                FastLED.clear();
+                FastLED.show();
+            }
+            break;
+    }
+
+//     EVERY_N_MILLIS(500) {
+//         Serial.print("ax=");
+//         Serial.print(imu.a.x);
+//         Serial.print(" ay=");
+//         Serial.print(imu.a.y);
+//         Serial.print(" az=");
+//         Serial.print(imu.a.z);
+//         Serial.print(" orientation=");
+//         Serial.println(imu.getOrientation());
+//         imu.debugOrientationCounters();
 //     }
-    // EVERY_N_MILLIS(500) {
-    //     if (control_value != 5) {
-    //         --control_value;
-    //         Serial.println(control_value);
-    //     }
-    // }
-    //
-//    EVERY_N_MILLIS(33) {
-//        matrix();
-//        // animate_noise(5, 200);
-//        // confetti(control_value);
-//        // cylon();
-//        FastLED.show();
-//    }
-    // snprintf(report, sizeof(report), "A: %3d %3d %3d", (int16_t)(imu.a.x * 100), (int16_t)(imu.a.y * 100), (int16_t)(imu.a.z * 100));
-    // Serial.println(report);
-    // FastLED.delay(1000 / 10.0);
+
+
 }
