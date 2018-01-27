@@ -82,6 +82,28 @@ void matrix()
         }
 }
 
+void rain()
+{
+    static int8_t hotspots[kMatrixWidth] = {-1};
+
+    fadeToBlackBy(leds, NUM_LEDS, 20);
+
+    for (uint8_t i = 0 ; i < kMatrixWidth ; ++i) {
+        if (hotspots[i] != -1) {
+            leds[XY(i, hotspots[i])] = CRGB::Blue;
+            ++hotspots[i];
+
+            if (hotspots[i] == kMatrixHeight) {
+                hotspots[i] = -1;
+            }
+        }
+    }
+
+    if (random8(100) > 90) {
+        hotspots[random8(kMatrixWidth)] = 0;
+    }
+}
+
 void confetti(uint8_t probability)
 {
     static uint8_t hue = 0;
@@ -157,8 +179,9 @@ void loop()
 
     switch (currentOrientation) {
         case IMUORIENTATION_VERTICAL_NORMAL:
-            EVERY_N_MILLIS(66) {
-                matrix();
+            EVERY_N_MILLIS(16) {
+//                matrix();
+                rain();
                 FastLED.show();
             }
             break;
