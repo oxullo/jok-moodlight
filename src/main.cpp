@@ -6,6 +6,7 @@
 #include "LSM6.h"
 #include "ballgame.h"
 #include "rain.h"
+#include "confetti.h"
 
 CRGB leds[NUM_LEDS];
 LSM6 imu;
@@ -42,21 +43,6 @@ void animate_noise(uint16_t speed, uint16_t scale)
         }
     }
     ihue+=1;
-}
-
-void confetti(uint8_t probability)
-{
-    static uint8_t hue = 0;
-    EVERY_N_MILLIS(500) {
-        ++hue;
-    }
-    // random colored speckles that blink in and fade smoothly
-    fadeToBlackBy(leds, NUM_LEDS, 10);
-
-    if (random8(100) < probability) {
-        int pos = random16(NUM_LEDS);
-        leds[pos] += CHSV( hue + random8(64), 200, 255);
-    }
 }
 
 void tester()
@@ -127,7 +113,7 @@ void loop()
 
         case IMUORIENTATION_VERTICAL_90CW:
             EVERY_N_MILLIS(33) {
-                confetti(30);
+                confetti_render(30);
                 FastLED.show();
             }
             break;
