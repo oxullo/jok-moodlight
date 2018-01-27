@@ -8,6 +8,7 @@
 #include "rain.h"
 #include "confetti.h"
 #include "noise.h"
+#include "amdx.h"
 
 
 CRGB leds[NUM_LEDS];
@@ -31,6 +32,23 @@ void tester()
 
     FastLED.clear();
     FastLED.show();
+}
+
+void play_alogo()
+{
+    FastLED.clear();
+    for (uint8_t x=0 ; x < kMatrixWidth ; ++x) {
+        uint8_t column = pgm_read_byte(&(alogo[x]));
+
+        for (uint8_t y=0 ; y < kMatrixHeight ; ++y) {
+            if (column & (1 << y)) {
+                leds[XY(x, y)] = CHSV(0, 0, 100);
+            }
+        }
+    }
+
+    FastLED.show();
+    delay(3000);
 }
 
 void flashlight()
@@ -61,6 +79,7 @@ void setup()
     Serial.println("Hellow");
 
     // tester();
+    play_alogo();
 }
 
 void loop()
@@ -120,10 +139,10 @@ void loop()
             break;
 
         case IMUORIENTATION_UNKNOWN:
-            EVERY_N_MILLIS(66) {
-                FastLED.clear();
-                FastLED.show();
-            }
+//            EVERY_N_MILLIS(66) {
+//                FastLED.clear();
+//                FastLED.show();
+//            }
             break;
     }
 
