@@ -7,43 +7,12 @@
 #include "ballgame.h"
 #include "rain.h"
 #include "confetti.h"
+#include "noise.h"
+
 
 CRGB leds[NUM_LEDS];
 LSM6 imu;
 
-
-void animate_noise(uint16_t speed, uint16_t scale)
-{
-    static uint8_t ihue=0;
-    static uint8_t noise[MAX_DIMENSION][MAX_DIMENSION];
-    static uint16_t x = random16();
-    static uint16_t y = random16();
-    static uint16_t z = random16();
-
-
-    for (int i = 0; i < MAX_DIMENSION; i++) {
-        int ioffset = scale * i;
-
-        for (int j = 0; j < MAX_DIMENSION; j++) {
-            int joffset = scale * j;
-            noise[i][j] = inoise8(x + ioffset, y + joffset, z);
-        }
-    }
-    z += speed;
-
-    for(int i = 0; i < kMatrixWidth; i++) {
-        for(int j = 0; j < kMatrixHeight; j++) {
-        // We use the value at the (i,j) coordinate in the noise
-        // array for our brightness, and the flipped value from (j,i)
-        // for our pixel's hue.
-        leds[XY(i, j)] = CHSV(noise[j][i], 255, noise[i][j]);
-
-        // You can also explore other ways to constrain the hue used, like below
-        // leds[XY(i,j)] = CHSV(ihue + (noise[j][i]>>2),255,noise[i][j]);
-        }
-    }
-    ihue+=1;
-}
 
 void tester()
 {
@@ -71,18 +40,22 @@ void flashlight()
 
 void setup()
 {
+    digitalWrite(LED_BUILTIN, HIGH);
+
     Serial.begin(115200);
 
     Wire.begin();
 
-    pinMode(13, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
 
     LEDS.addLeds<WS2811,PIXEL_PIN,GRB>(leds, NUM_LEDS);
-    // LEDS.setBrightness(96);
 
     if (!imu.init()) {
         Serial.println("Horror");
-        while (1);
+        while (1) {
+            digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+            delay(1000);
+        }
     }
     imu.enableDefault();
     Serial.println("Hellow");
@@ -94,6 +67,10 @@ void loop()
 {
     static IMUOrientation currentOrientation = IMUORIENTATION_UNKNOWN;
     imu.readAcc();
+
+    EVERY_N_MILLIS(100) {
+        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    }
 
     EVERY_N_MILLIS(500) {
         IMUOrientation newOrientation = imu.getOrientation();
@@ -120,7 +97,7 @@ void loop()
 
         case IMUORIENTATION_VERTICAL_90CCW:
             EVERY_N_MILLIS(16) {
-                animate_noise(5, 100);
+                noise_render(5, 100);
                 FastLED.show();
             }
             break;
