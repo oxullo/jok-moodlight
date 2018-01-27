@@ -5,6 +5,7 @@
 #include "leds.h"
 #include "LSM6.h"
 #include "ballgame.h"
+#include "rain.h"
 
 CRGB leds[NUM_LEDS];
 LSM6 imu;
@@ -82,28 +83,6 @@ void matrix()
         }
 }
 
-void rain()
-{
-    static int8_t hotspots[kMatrixWidth] = {-1};
-
-    fadeToBlackBy(leds, NUM_LEDS, 20);
-
-    for (uint8_t i = 0 ; i < kMatrixWidth ; ++i) {
-        if (hotspots[i] != -1) {
-            leds[XY(i, hotspots[i])] = CRGB::Blue;
-            ++hotspots[i];
-
-            if (hotspots[i] == kMatrixHeight) {
-                hotspots[i] = -1;
-            }
-        }
-    }
-
-    if (random8(100) > 90) {
-        hotspots[random8(kMatrixWidth)] = 0;
-    }
-}
-
 void confetti(uint8_t probability)
 {
     static uint8_t hue = 0;
@@ -161,6 +140,8 @@ void setup()
     imu.enableDefault();
     Serial.println("Hellow");
 
+    rain_init();
+
     // tester();
 }
 
@@ -181,7 +162,7 @@ void loop()
         case IMUORIENTATION_VERTICAL_NORMAL:
             EVERY_N_MILLIS(16) {
 //                matrix();
-                rain();
+                rain_render();
                 FastLED.show();
             }
             break;
