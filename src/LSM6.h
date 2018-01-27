@@ -139,4 +139,6 @@ template <typename Ta, typename Tb> float LSM6::vector_dot(const vector<Ta> *a, 
   return (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
 }
 
+extern LSM6 imu;
+
 #endif

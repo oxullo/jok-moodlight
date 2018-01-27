@@ -2,28 +2,13 @@
 #include <FastLED.h>
 #include <Wire.h>
 
+#include "leds.h"
 #include "LSM6.h"
-
-const uint8_t kMatrixWidth = 8;
-const uint8_t kMatrixHeight = 8;
-#define MAX_DIMENSION ((kMatrixWidth>kMatrixHeight) ? kMatrixWidth : kMatrixHeight)
-#define NUM_LEDS (kMatrixWidth * kMatrixHeight)
-// Param for different pixel layouts
-const bool    kMatrixSerpentineLayout = false;
-
-#define PIXEL_PIN    A0
+#include "ballgame.h"
 
 CRGB leds[NUM_LEDS];
 LSM6 imu;
 
-
-uint16_t XY(uint8_t x, uint8_t y)
-{
-    uint16_t xc = min(max(x, 0), kMatrixWidth - 1);
-    uint16_t yc = min(max(y, 0), kMatrixHeight - 1);
-
-    return (yc * kMatrixWidth) + xc;
-}
 
 void animate_noise(uint16_t speed, uint16_t scale)
 {
@@ -137,54 +122,6 @@ void cylon()
 		// Wait a little bit before we loop around and do it again
 		delay(10);
 	}
-}
-
-void ball()
-{
-    static float vx = 0, ballx = 3, vy = 0, bally = 3;
-    int8_t bmx = (int8_t)ballx, bmy = (int8_t)bally;
-
-    vx *= 0.99;
-    vy *= 0.99;
-
-    if ((bmx < kMatrixWidth - 1 && imu.a.x > 0) || (bmx > 0 && imu.a.x < 0)) {
-        vx += imu.a.x * 0.01;
-    }
-
-    if ((bmy < kMatrixHeight - 1 && imu.a.y > 0) || (bmy > 0 && imu.a.y < 0)) {
-        vy += imu.a.y * 0.01;
-    }
-
-    ballx = ballx + vx;
-    bally = bally + vy;
-    bmx = (int8_t)ballx;
-    bmy = (int8_t)bally;
-
-    if (bmx > kMatrixWidth - 1 || bmx < 0) {
-        vx = -vx * 0.5;
-
-        if (bmx > kMatrixWidth - 1) {
-            ballx = kMatrixWidth - 1;
-        } else {
-            ballx = 0;
-        }
-    }
-
-    if (bmy > kMatrixHeight - 1 || bmy < 0) {
-        vy = -vy * 0.5;
-
-        if (bmy > kMatrixHeight - 1) {
-            bally = kMatrixHeight - 1;
-        } else {
-            bally = 0;
-        }
-    }
-
-    bmx = (int8_t)ballx;
-    bmy = (int8_t)bally;
-
-    fadeToBlackBy(leds, NUM_LEDS, 20);
-    leds[XY(bmx, bmy)] = CRGB::White;
 }
 
 void confetti(uint8_t probability)
