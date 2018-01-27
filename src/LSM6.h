@@ -3,6 +3,16 @@
 
 #include <Arduino.h>
 
+typedef enum IMUOrientation {
+    IMUORIENTATION_UNKNOWN,
+    IMUORIENTATION_VERTICAL_NORMAL,
+    IMUORIENTATION_VERTICAL_90CW,
+    IMUORIENTATION_VERTICAL_180,
+    IMUORIENTATION_VERTICAL_90CCW,
+    IMUORIENTATION_HORIZONTAL_TOP,
+    IMUORIENTATION_HORIZONTAL_BOTTOM
+} IMUOrientation;
+
 class LSM6
 {
   public:
@@ -92,6 +102,8 @@ class LSM6
 
     uint8_t last_status; // status of last I2C transmission
 
+    IMUOrientation orientation;
+
     LSM6(void);
 
     bool init(deviceType device = device_auto, sa0State sa0 = sa0_auto);
@@ -106,6 +118,7 @@ class LSM6
     void readAcc(void);
     void readGyro(void);
     void read(void);
+    void updateOrientation(void);
 
     void setTimeout(uint16_t timeout);
     uint16_t getTimeout(void);

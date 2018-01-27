@@ -21,6 +21,8 @@ LSM6::LSM6(void)
 
   io_timeout = 0;  // 0 = no timeout
   did_timeout = false;
+
+  orientation = IMUORIENTATION_UNKNOWN;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -208,6 +210,33 @@ void LSM6::read(void)
 {
   readAcc();
   readGyro();
+}
+
+void LSM6::updateOrientation(void)
+{
+    orientation = IMUORIENTATION_UNKNOWN;
+    // vertical
+    if (abs(a.z) < 0.2) {
+        if (abs(a.x) < 0.2) {
+            if (a.y > 0.8) {
+                orientation = IMUORIENTATION_VERTICAL_NORMAL;
+            } else if (a.y < -0.8) {
+                orientation = IMUORIENTATION_VERTICAL_180;
+            }
+        } else if (abs(a.y) < 0.2) {
+            if (a.x > 0.8) {
+                orientation = IMUORIENTATION_VERTICAL_90CW;
+            } else if (a.x < -0.8) {
+                orientation = IMUORIENTATION_VERTICAL_90CCW;
+            }
+        }
+    } else {
+        if (a.z > 0.8) {
+            orientation = IMUORIENTATION_HORIZONTAL_BOTTOM;
+        } else if (a.z < -0.8) {
+            orientation = IMUORIENTATION_HORIZONTAL_TOP;
+        }
+    }
 }
 
 void LSM6::vector_normalize(vector<float> *a)

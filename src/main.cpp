@@ -197,19 +197,22 @@ void loop()
     // oled.println(report);
     // oled.display();
 
-    // EVERY_N_MILLIS(100) {
-    //     Serial.print("ax=");
-    //     Serial.print(imu.a.x);
-    //     Serial.print(" ay=");
-    //     Serial.print(imu.a.y);
-    //     Serial.print(" az=");
-    //     Serial.println(imu.a.z);
-    // }
+     EVERY_N_MILLIS(500) {
+         imu.updateOrientation();
+         Serial.print("ax=");
+         Serial.print(imu.a.x);
+         Serial.print(" ay=");
+         Serial.print(imu.a.y);
+         Serial.print(" az=");
+         Serial.print(imu.a.z);
+         Serial.print(" orientation=");
+         Serial.println(imu.orientation);
+     }
 
-    // EVERY_N_MILLIS(5) {
-    //     ball();
-    //     FastLED.show();
-    // }
+//     EVERY_N_MILLIS(5) {
+//         ballgame_render();
+//         FastLED.show();
+//     }
     // EVERY_N_MILLIS(500) {
     //     if (control_value != 5) {
     //         --control_value;
@@ -217,13 +220,13 @@ void loop()
     //     }
     // }
     //
-    EVERY_N_MILLIS(33) {
-        matrix();
-        // animate_noise(5, 200);
-        // confetti(control_value);
-        // cylon();
-        FastLED.show();
-    }
+//    EVERY_N_MILLIS(33) {
+//        matrix();
+//        // animate_noise(5, 200);
+//        // confetti(control_value);
+//        // cylon();
+//        FastLED.show();
+//    }
     // snprintf(report, sizeof(report), "A: %3d %3d %3d", (int16_t)(imu.a.x * 100), (int16_t)(imu.a.y * 100), (int16_t)(imu.a.z * 100));
     // Serial.println(report);
     // FastLED.delay(1000 / 10.0);
