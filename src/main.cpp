@@ -198,7 +198,6 @@ void loop()
     // oled.display();
 
      EVERY_N_MILLIS(500) {
-         imu.updateOrientation();
          Serial.print("ax=");
          Serial.print(imu.a.x);
          Serial.print(" ay=");
@@ -206,7 +205,8 @@ void loop()
          Serial.print(" az=");
          Serial.print(imu.a.z);
          Serial.print(" orientation=");
-         Serial.println(imu.orientation);
+         Serial.println(imu.getOrientation());
+         imu.debugOrientationCounters();
      }
 
 //     EVERY_N_MILLIS(5) {

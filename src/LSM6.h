@@ -102,7 +102,7 @@ class LSM6
 
     uint8_t last_status; // status of last I2C transmission
 
-    IMUOrientation orientation;
+    uint16_t orientationCounters[7];
 
     LSM6(void);
 
@@ -118,11 +118,12 @@ class LSM6
     void readAcc(void);
     void readGyro(void);
     void read(void);
-    void updateOrientation(void);
 
     void setTimeout(uint16_t timeout);
     uint16_t getTimeout(void);
     bool timeoutOccurred(void);
+    IMUOrientation getOrientation();
+    void debugOrientationCounters();
 
     // vector functions
     template <typename Ta, typename Tb, typename To> static void vector_cross(const vector<Ta> *a, const vector<Tb> *b, vector<To> *out);
@@ -136,6 +137,7 @@ class LSM6
     uint16_t io_timeout;
     bool did_timeout;
 
+    void updateOrientation(void);
     int16_t testReg(uint8_t address, regAddr reg);
 };
 

@@ -13,6 +13,9 @@
 
 #define DS33_WHO_ID    0x69
 
+#define TILT_THRESHOLD_MIN      0.4
+#define TILT_THRESHOLD_MAX      0.7
+
 // Constructors ////////////////////////////////////////////////////////////////
 
 LSM6::LSM6(void)
@@ -22,7 +25,9 @@ LSM6::LSM6(void)
   io_timeout = 0;  // 0 = no timeout
   did_timeout = false;
 
-  orientation = IMUORIENTATION_UNKNOWN;
+  for (uint8_t i=0 ; i < 7 ; ++i) {
+      orientationCounters[i] = 0;
+  }
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -172,6 +177,8 @@ void LSM6::readAcc(void)
   a.x = (int16_t)(xha << 8 | xla) / 65536. * 4;
   a.y = (int16_t)(yha << 8 | yla) / 65536. * 4;
   a.z = (int16_t)(zha << 8 | zla) / 65536. * 4;
+
+  updateOrientation();
 }
 
 // Reads the 3 gyro channels and stores them in vector g
@@ -214,29 +221,62 @@ void LSM6::read(void)
 
 void LSM6::updateOrientation(void)
 {
-    orientation = IMUORIENTATION_UNKNOWN;
+    IMUOrientation candidate = IMUORIENTATION_UNKNOWN;
     // vertical
-    if (abs(a.z) < 0.2) {
-        if (abs(a.x) < 0.2) {
-            if (a.y > 0.8) {
-                orientation = IMUORIENTATION_VERTICAL_NORMAL;
-            } else if (a.y < -0.8) {
-                orientation = IMUORIENTATION_VERTICAL_180;
+    if (abs(a.z) < TILT_THRESHOLD_MIN) {
+        if (abs(a.x) < TILT_THRESHOLD_MIN) {
+            if (a.y > TILT_THRESHOLD_MAX) {
+                candidate = IMUORIENTATION_VERTICAL_NORMAL;
+            } else if (a.y < -TILT_THRESHOLD_MAX) {
+                candidate = IMUORIENTATION_VERTICAL_180;
             }
-        } else if (abs(a.y) < 0.2) {
-            if (a.x > 0.8) {
-                orientation = IMUORIENTATION_VERTICAL_90CW;
-            } else if (a.x < -0.8) {
-                orientation = IMUORIENTATION_VERTICAL_90CCW;
+        } else if (abs(a.y) < TILT_THRESHOLD_MIN) {
+            if (a.x > TILT_THRESHOLD_MAX) {
+                candidate = IMUORIENTATION_VERTICAL_90CW;
+            } else if (a.x < -TILT_THRESHOLD_MAX) {
+                candidate = IMUORIENTATION_VERTICAL_90CCW;
             }
         }
     } else {
-        if (a.z > 0.8) {
-            orientation = IMUORIENTATION_HORIZONTAL_BOTTOM;
-        } else if (a.z < -0.8) {
-            orientation = IMUORIENTATION_HORIZONTAL_TOP;
+        if (a.z > TILT_THRESHOLD_MAX) {
+            candidate = IMUORIENTATION_HORIZONTAL_BOTTOM;
+        } else if (a.z < -TILT_THRESHOLD_MAX) {
+            candidate = IMUORIENTATION_HORIZONTAL_TOP;
         }
     }
+
+    if (orientationCounters[candidate] < 1000) {
+        ++orientationCounters[candidate];
+    }
+
+    for (uint8_t i=0 ; i < 7 ; ++i) {
+        if (i != candidate && orientationCounters[i] != 0) {
+            --orientationCounters[i];
+        }
+    }
+}
+
+IMUOrientation LSM6::getOrientation()
+{
+    uint8_t maxIndex = 0;
+    for (uint8_t i=1 ; i < 7 ; ++i) {
+        if (orientationCounters[i] > 800) {
+            maxIndex = i;
+        }
+    }
+
+    return (IMUOrientation)maxIndex;
+}
+
+void LSM6::debugOrientationCounters()
+{
+    for (uint8_t i=1 ; i < 7 ; ++i) {
+        Serial.print(i);
+        Serial.print("=");
+        Serial.print(orientationCounters[i]);
+        Serial.print(" ");
+    }
+    Serial.println();
 }
 
 void LSM6::vector_normalize(vector<float> *a)
