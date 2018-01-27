@@ -44,45 +44,6 @@ void animate_noise(uint16_t speed, uint16_t scale)
     ihue+=1;
 }
 
-void matrix()
-{
-        // move code downward
-        // start with lowest row to allow proper overlapping on each column
-        for (int8_t row=kMatrixHeight-1; row>=0; row--)
-        {
-          for (int8_t col=0; col<kMatrixWidth; col++)
-          {
-            if (leds[XY(col, row)] == CRGB(175,255,175))
-            {
-              leds[XY(col, row)] = CRGB(27,130,39); // create trail
-              if (row < kMatrixHeight-1) leds[XY(col, row+1)] = CRGB(175,255,175);
-            }
-          }
-        }
-
-        // fade all leds
-        for(int i = 0; i < NUM_LEDS; i++) {
-          if (leds[i].g != 255) leds[i].nscale8(192); // only fade trail
-        }
-
-        // check for empty screen to ensure code spawn
-        bool emptyScreen = true;
-        for(int i = 0; i < NUM_LEDS; i++) {
-          if (leds[i])
-          {
-            emptyScreen = false;
-            break;
-          }
-        }
-
-        // spawn new falling code
-        if (random8(3) == 0 || emptyScreen) // lower number == more frequent spawns
-        {
-          int8_t spawnX = random8(kMatrixWidth);
-          leds[XY(spawnX, 0)] = CRGB(175,255,175 );
-        }
-}
-
 void confetti(uint8_t probability)
 {
     static uint8_t hue = 0;
@@ -140,8 +101,6 @@ void setup()
     imu.enableDefault();
     Serial.println("Hellow");
 
-    rain_init();
-
     // tester();
 }
 
@@ -161,7 +120,6 @@ void loop()
     switch (currentOrientation) {
         case IMUORIENTATION_VERTICAL_NORMAL:
             EVERY_N_MILLIS(16) {
-//                matrix();
                 rain_render();
                 FastLED.show();
             }

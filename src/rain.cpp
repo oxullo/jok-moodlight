@@ -4,7 +4,7 @@
 #include "leds.h"
 #include "LSM6.h"
 
-#define MAX_DROPS       12
+#define MAX_DROPS       6
 
 
 class Drop {
@@ -16,12 +16,13 @@ public:
     uint8_t get_x();
     uint8_t get_y();
 
-
 private:
     bool alive;
     float x;
     float y;
+    float friction;
 };
+
 
 Drop::Drop() :
         alive(false),
@@ -39,12 +40,22 @@ void Drop::start()
 {
     x = random8(kMatrixWidth);
     y = 0;
+    friction = 1 - random8(9) / 10.0;
     alive = true;
 }
 
 void Drop::step()
 {
-    y += 0.5;
+    x += imu.a.x / 2 * friction;
+    y += imu.a.y / 2 * friction;
+
+    if (x < 0) {
+        x = 0;
+    }
+
+    if (x > kMatrixWidth - 1) {
+        x = kMatrixWidth - 1;
+    }
 
     if (y > kMatrixHeight - 1) {
         alive = false;
@@ -64,13 +75,9 @@ uint8_t Drop::get_y()
 
 static Drop drops[MAX_DROPS];
 
-void rain_init()
-{
-}
-
 void rain_render()
 {
-    fadeToBlackBy(leds, NUM_LEDS, 20);
+    fadeToBlackBy(leds, NUM_LEDS, 40);
 
     for (uint8_t i = 0 ; i < MAX_DROPS ; ++i) {
         if (drops[i].is_alive()) {
