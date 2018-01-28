@@ -1,8 +1,10 @@
 #ifndef LEDS_H
 #define LEDS_H
 
-#include <FastLED.h>
 #include <stdint.h>
+
+#define FASTLED_INTERNAL
+#include <FastLED.h>
 
 const uint8_t kMatrixWidth = 8;
 const uint8_t kMatrixHeight = 8;

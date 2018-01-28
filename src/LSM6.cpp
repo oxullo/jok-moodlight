@@ -83,12 +83,15 @@ bool LSM6::init(deviceType device, sa0State sa0)
 
   _device = device;
 
-  switch (device)
-  {
+    switch (device) {
     case device_DS33:
-      address = (sa0 == sa0_high) ? DS33_SA0_HIGH_ADDRESS : DS33_SA0_LOW_ADDRESS;
-      break;
-  }
+        address =
+                (sa0 == sa0_high) ?
+                        DS33_SA0_HIGH_ADDRESS : DS33_SA0_LOW_ADDRESS;
+        break;
+    default:
+        break;
+    }
 
   return true;
 }
