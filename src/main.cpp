@@ -8,7 +8,9 @@
 #include "rain.h"
 #include "confetti.h"
 #include "noise.h"
+#include "swirl.h"
 #include "amdx.h"
+#include "banner.h"
 
 
 CRGB leds[NUM_LEDS];
@@ -51,6 +53,34 @@ void play_alogo()
     delay(3000);
 }
 
+void scroll_banner()
+{
+    for (uint16_t pos = 0 ; pos < BANNER_COLS - 7 ; ++pos) {
+        FastLED.clear();
+        for (uint8_t x=0 ; x < kMatrixWidth ; ++x) {
+            uint8_t column = pgm_read_byte(&(banner[x+pos]));
+
+            for (uint8_t y=0 ; y < kMatrixHeight ; ++y) {
+                if (column & (1 << y)) {
+                    if (pos == BANNER_COLS - 8) {
+                        leds[XY(x, y)] = CRGB(190, 0, 0);
+                    } else {
+                        leds[XY(x, y)] = CHSV(0, 0, 100);
+                    }
+                }
+            }
+        }
+
+        FastLED.show();
+        if (pos == 0) {
+            delay(1000);
+        } else {
+            delay(66);
+        }
+    }
+    delay(1000);
+}
+
 void flashlight()
 {
     fill_solid(leds, NUM_LEDS, CRGB::White);
@@ -58,25 +88,21 @@ void flashlight()
 
 void setup()
 {
+    pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    Serial.begin(115200);
-
-    Wire.begin();
-
-    pinMode(LED_BUILTIN, OUTPUT);
+//    Serial.begin(115200);
 
     LEDS.addLeds<WS2811,PIXEL_PIN,GRB>(leds, NUM_LEDS);
 
+    Wire.begin();
     if (!imu.init()) {
-        Serial.println("Horror");
         while (1) {
             digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
             delay(1000);
         }
     }
     imu.enableDefault();
-    Serial.println("Hellow");
 
     // tester();
     play_alogo();
@@ -122,6 +148,10 @@ void loop()
             break;
 
         case IMUORIENTATION_VERTICAL_180:
+            EVERY_N_MILLIS(33) {
+                swirl_render();
+                FastLED.show();
+            }
             break;
 
         case IMUORIENTATION_HORIZONTAL_TOP:
