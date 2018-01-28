@@ -42,18 +42,21 @@ void tester()
 void play_alogo()
 {
     FastLED.clear();
-    for (uint8_t x=0 ; x < kMatrixWidth ; ++x) {
-        uint8_t column = pgm_read_byte(&(alogo[x]));
 
-        for (uint8_t y=0 ; y < kMatrixHeight ; ++y) {
-            if (column & (1 << y)) {
-                leds[XY(x, y)] = CHSV(0, 0, 100);
+    for (uint8_t v=0 ; v <= 100 ; ++v) {
+        for (uint8_t x=0 ; x < kMatrixWidth ; ++x) {
+            uint8_t column = pgm_read_byte(&(alogo[x]));
+
+            for (uint8_t y=0 ; y < kMatrixHeight ; ++y) {
+                if (column & (1 << y)) {
+                    leds[XY(x, y)] = CHSV(0, 0, v);
+                }
             }
         }
+        FastLED.show();
+        delay(6);
     }
-
-    FastLED.show();
-    delay(2000);
+    delay(800);
 }
 
 void play_banner()
