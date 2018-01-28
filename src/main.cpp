@@ -132,35 +132,35 @@ void loop()
     switch (currentOrientation) {
         case IMUORIENTATION_VERTICAL_NORMAL:
             EVERY_N_MILLIS(16) {
-                rain_render();
+                rain.render();
                 FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_90CW:
             EVERY_N_MILLIS(33) {
-                confetti_render(30);
+                confetti.render();
                 FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_90CCW:
             EVERY_N_MILLIS(16) {
-                noise_render(5, 100);
+                noise.render();
                 FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_180:
             EVERY_N_MILLIS(33) {
-                swirl_render();
+                swirl.render();
                 FastLED.show();
             }
             break;
 
         case IMUORIENTATION_HORIZONTAL_TOP:
             EVERY_N_MILLIS(5) {
-                ballgame_render();
+                ballgame.render();
                 FastLED.show();
             }
             break;

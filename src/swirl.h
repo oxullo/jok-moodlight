@@ -2,8 +2,15 @@
 #ifndef SRC_SWIRL_H_
 #define SRC_SWIRL_H_
 
-void swirl_render();
+#include "animator.h"
 
+class Swirl : public Animator {
+public:
+    Swirl();
+    virtual void render();
+};
+
+extern Swirl swirl;
 
 
 #endif /* SRC_SWIRL_H_ */

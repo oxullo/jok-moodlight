@@ -1,10 +1,24 @@
 #include "leds.h"
 #include "LSM6.h"
 
+#include "ballgame.h"
 
-static float vx = 0, ballx = 3, vy = 0, bally = 3;
+Ballgame::Ballgame() :
+        vx(0),
+        vy(0),
+        ballx(3),
+        bally(3)
+{
 
-void ballgame_render()
+}
+
+void Ballgame::reset()
+{
+    ballx = 3;
+    bally = 3;
+}
+
+void Ballgame::render()
 {
     int8_t bmx = (int8_t)ballx, bmy = (int8_t)bally;
 
@@ -50,3 +64,5 @@ void ballgame_render()
     fadeToBlackBy(leds, NUM_LEDS, 20);
     leds[XY(bmx, bmy)] = CRGB::White;
 }
+
+Ballgame ballgame;

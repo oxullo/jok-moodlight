@@ -1,9 +1,15 @@
 #include "leds.h"
+#include "swirl.h"
 
 #define BORDER      1
 
+Swirl::Swirl()
+{
+
+}
+
 // Taken from https://gist.github.com/kriegsman/5adca44e14ad025e6d3b
-void swirl_render()
+void Swirl::render()
 {
     // Apply some blurring to whatever's already on the matrix
     // Note that we never actually clear the matrix, we just constantly
@@ -28,3 +34,5 @@ void swirl_render()
     leds[XY( i,nj)] += CHSV( ms / 37, 200, 255);
     leds[XY(ni, j)] += CHSV( ms / 41, 200, 255);
 }
+
+Swirl swirl;

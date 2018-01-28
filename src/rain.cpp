@@ -3,25 +3,8 @@
 
 #include "leds.h"
 #include "LSM6.h"
+#include "rain.h"
 
-#define MAX_DROPS       6
-
-
-class Drop {
-public:
-    Drop();
-    bool is_alive();
-    void start();
-    void step();
-    uint8_t get_x();
-    uint8_t get_y();
-
-private:
-    bool alive;
-    float x;
-    float y;
-    float friction;
-};
 
 
 Drop::Drop() :
@@ -34,6 +17,11 @@ Drop::Drop() :
 bool Drop::is_alive()
 {
     return alive;
+}
+
+void Drop::reset()
+{
+    alive = false;
 }
 
 void Drop::start()
@@ -73,9 +61,19 @@ uint8_t Drop::get_y()
 }
 
 
-static Drop drops[MAX_DROPS];
+Rain::Rain()
+{
 
-void rain_render()
+}
+
+void Rain::reset()
+{
+    for (uint8_t i = 0 ; i < MAX_DROPS ; ++i) {
+        drops[i].reset();
+    }
+}
+
+void Rain::render()
 {
     fadeToBlackBy(leds, NUM_LEDS, 40);
 
@@ -95,3 +93,5 @@ void rain_render()
         }
     }
 }
+
+Rain rain;

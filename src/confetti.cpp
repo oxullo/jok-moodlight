@@ -1,11 +1,17 @@
-#include <stdint.h>
-
+#include "confetti.h"
 #include "leds.h"
 
-static uint8_t hue = 0;
+#define DEFAULT_PROBABILITY     30
+
+Confetti::Confetti() :
+    hue(0),
+    probability(DEFAULT_PROBABILITY)
+{
+
+}
 
 // adapted from https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino
-void confetti_render(uint8_t probability)
+void Confetti::render()
 {
     EVERY_N_MILLIS(500) {
         ++hue;
@@ -18,3 +24,6 @@ void confetti_render(uint8_t probability)
         leds[pos] += CHSV(hue + random8(64), 200, 255);
     }
 }
+
+
+Confetti confetti;
