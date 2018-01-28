@@ -10,6 +10,7 @@
 #include "confetti.h"
 #include "noise.h"
 #include "swirl.h"
+#include "flashlight.h"
 #include "amdx.h"
 #include "banner.h"
 
@@ -85,12 +86,6 @@ void play_banner()
     delay(1000);
 }
 
-void flashlight()
-{
-    fill_solid(leds, NUM_LEDS, CRGB::White);
-    FastLED.show();
-}
-
 void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -116,7 +111,7 @@ void setup()
     animators_map[IMUORIENTATION_VERTICAL_90CCW] = &noise;
     animators_map[IMUORIENTATION_VERTICAL_180] = &swirl;
     animators_map[IMUORIENTATION_HORIZONTAL_TOP] = &ballgame;
-    animators_map[IMUORIENTATION_HORIZONTAL_BOTTOM] = NULL;
+    animators_map[IMUORIENTATION_HORIZONTAL_BOTTOM] = &flashlight;
     animators_map[IMUORIENTATION_UNKNOWN] = NULL;
 
     // tester();
