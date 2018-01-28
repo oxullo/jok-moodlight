@@ -2,12 +2,13 @@
 #include "leds.h"
 
 #define DEFAULT_PROBABILITY     30
+#define FRAME_DELAY             33
 
 Confetti::Confetti() :
     hue(0),
     probability(DEFAULT_PROBABILITY)
 {
-
+    frame_delay = FRAME_DELAY;
 }
 
 // adapted from https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino

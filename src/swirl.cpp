@@ -1,11 +1,13 @@
 #include "leds.h"
 #include "swirl.h"
 
-#define BORDER      1
+#define BORDER          1
+#define FRAME_DELAY     33
+
 
 Swirl::Swirl()
 {
-
+    frame_delay = FRAME_DELAY;
 }
 
 // Taken from https://gist.github.com/kriegsman/5adca44e14ad025e6d3b

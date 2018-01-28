@@ -3,13 +3,16 @@
 
 #include "ballgame.h"
 
+#define FRAME_DELAY         5
+
+
 Ballgame::Ballgame() :
         vx(0),
         vy(0),
         ballx(3),
         bally(3)
 {
-
+    frame_delay = FRAME_DELAY;
 }
 
 void Ballgame::reset()
