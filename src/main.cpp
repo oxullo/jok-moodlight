@@ -128,10 +128,6 @@ void loop()
 
     imu.update();
 
-    if (imu.hasBeenKnocked()) {
-        play_banner();
-    }
-
     EVERY_N_MILLIS(100) {
         digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     }
@@ -146,6 +142,10 @@ void loop()
                 animators_map[currentOrientation]->reset();
             }
         }
+    }
+
+    if (imu.hasBeenKnocked() && currentOrientation == IMUORIENTATION_HORIZONTAL_TOP) {
+        play_banner();
     }
 
     Animator *current_animator = animators_map[currentOrientation];

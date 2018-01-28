@@ -15,7 +15,7 @@
 
 #define TILT_THRESHOLD_MIN      0.4
 #define TILT_THRESHOLD_MAX      0.7
-#define KNOCK_THRESHOLD         3.1
+#define KNOCK_THRESHOLD         2.8
 
 // Constructors ////////////////////////////////////////////////////////////////
 
@@ -258,7 +258,7 @@ void LSM6::updateOrientation(void)
 
 void LSM6::detectKnock()
 {
-    if (abs(prev_a.z - a.z) > KNOCK_THRESHOLD) {
+    if (prev_a.z - a.z > KNOCK_THRESHOLD) {
         did_knock = true;
     }
 }
