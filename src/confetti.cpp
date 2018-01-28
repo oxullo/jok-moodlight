@@ -23,6 +23,8 @@ void Confetti::render()
         int pos = random16(NUM_LEDS);
         leds[pos] += CHSV(hue + random8(64), 200, 255);
     }
+
+    FastLED.show();
 }
 
 

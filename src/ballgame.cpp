@@ -63,6 +63,8 @@ void Ballgame::render()
 
     fadeToBlackBy(leds, NUM_LEDS, 20);
     leds[XY(bmx, bmy)] = CRGB::White;
+
+    FastLED.show();
 }
 
 Ballgame ballgame;

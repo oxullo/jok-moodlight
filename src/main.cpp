@@ -84,6 +84,7 @@ void play_banner()
 void flashlight()
 {
     fill_solid(leds, NUM_LEDS, CRGB::White);
+    FastLED.show();
 }
 
 void setup()
@@ -133,42 +134,36 @@ void loop()
         case IMUORIENTATION_VERTICAL_NORMAL:
             EVERY_N_MILLIS(16) {
                 rain.render();
-                FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_90CW:
             EVERY_N_MILLIS(33) {
                 confetti.render();
-                FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_90CCW:
             EVERY_N_MILLIS(16) {
                 noise.render();
-                FastLED.show();
             }
             break;
 
         case IMUORIENTATION_VERTICAL_180:
             EVERY_N_MILLIS(33) {
                 swirl.render();
-                FastLED.show();
             }
             break;
 
         case IMUORIENTATION_HORIZONTAL_TOP:
             EVERY_N_MILLIS(5) {
                 ballgame.render();
-                FastLED.show();
             }
             break;
 
         case IMUORIENTATION_HORIZONTAL_BOTTOM:
             EVERY_N_MILLIS(33) {
                 flashlight();
-                FastLED.show();
             }
             break;
 

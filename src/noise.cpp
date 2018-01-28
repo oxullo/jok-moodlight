@@ -41,6 +41,8 @@ void Noise::render()
             leds[XY(i, j)] = CHSV(noisemap[j][i], 255, noisemap[i][j]);
         }
     }
+
+    FastLED.show();
 }
 
 Noise noise;

@@ -33,6 +33,8 @@ void Swirl::render()
     leds[XY(nj,ni)] += CHSV( ms / 29, 200, 255);
     leds[XY( i,nj)] += CHSV( ms / 37, 200, 255);
     leds[XY(ni, j)] += CHSV( ms / 41, 200, 255);
+
+    FastLED.show();
 }
 
 Swirl swirl;

@@ -92,6 +92,8 @@ void Rain::render()
             }
         }
     }
+
+    FastLED.show();
 }
 
 Rain rain;
