@@ -55,6 +55,8 @@ void play_alogo()
 
 void play_banner()
 {
+    FastLED.clear();
+
     for (uint16_t pos = 0 ; pos < BANNER_COLS - 7 ; ++pos) {
         FastLED.clear();
         for (uint8_t x=0 ; x < kMatrixWidth ; ++x) {
