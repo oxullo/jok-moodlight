@@ -98,6 +98,7 @@ class LSM6
     };
 
     vector<float> a; // accelerometer readings
+    vector<float> prev_a; // accelerometer readings
     vector<int16_t> g; // gyro readings
 
     uint8_t last_status; // status of last I2C transmission
@@ -115,14 +116,14 @@ class LSM6
     void writeReg(uint8_t reg, uint8_t value);
     uint8_t readReg(uint8_t reg);
 
-    void readAcc(void);
+    void update(void);
     void readGyro(void);
-    void read(void);
 
     void setTimeout(uint16_t timeout);
     uint16_t getTimeout(void);
     bool timeoutOccurred(void);
     IMUOrientation getOrientation();
+    bool hasBeenKnocked();
     void debugOrientationCounters();
 
     // vector functions
@@ -136,8 +137,10 @@ class LSM6
 
     uint16_t io_timeout;
     bool did_timeout;
+    bool did_knock;
 
     void updateOrientation(void);
+    void detectKnock();
     int16_t testReg(uint8_t address, regAddr reg);
 };
 

@@ -50,10 +50,10 @@ void play_alogo()
     }
 
     FastLED.show();
-    delay(3000);
+    delay(2000);
 }
 
-void scroll_banner()
+void play_banner()
 {
     for (uint16_t pos = 0 ; pos < BANNER_COLS - 7 ; ++pos) {
         FastLED.clear();
@@ -91,7 +91,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-//    Serial.begin(115200);
+    Serial.begin(115200);
 
     LEDS.addLeds<WS2811,PIXEL_PIN,GRB>(leds, NUM_LEDS);
 
@@ -111,7 +111,11 @@ void setup()
 void loop()
 {
     static IMUOrientation currentOrientation = IMUORIENTATION_UNKNOWN;
-    imu.readAcc();
+    imu.update();
+
+    if (imu.hasBeenKnocked()) {
+        play_banner();
+    }
 
     EVERY_N_MILLIS(100) {
         digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));

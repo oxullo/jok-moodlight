@@ -15,6 +15,7 @@
 
 #define TILT_THRESHOLD_MIN      0.4
 #define TILT_THRESHOLD_MAX      0.7
+#define KNOCK_THRESHOLD         3.1
 
 // Constructors ////////////////////////////////////////////////////////////////
 
@@ -24,6 +25,7 @@ LSM6::LSM6(void)
 
   io_timeout = 0;  // 0 = no timeout
   did_timeout = false;
+  did_knock = false;
 
   for (uint8_t i=0 ; i < 7 ; ++i) {
       orientationCounters[i] = 0;
@@ -149,7 +151,7 @@ uint8_t LSM6::readReg(uint8_t reg)
 }
 
 // Reads the 3 accelerometer channels and stores them in vector a
-void LSM6::readAcc(void)
+void LSM6::update(void)
 {
   Wire.beginTransmission(address);
   // automatic increment of register address is enabled by default (IF_INC in CTRL3_C)
@@ -173,12 +175,17 @@ void LSM6::readAcc(void)
   uint8_t zla = Wire.read();
   uint8_t zha = Wire.read();
 
+  prev_a.x = a.x;
+  prev_a.y = a.y;
+  prev_a.z = a.z;
+
   // combine high and low bytes
   a.x = (int16_t)(xha << 8 | xla) / 65536. * 4;
   a.y = (int16_t)(yha << 8 | yla) / 65536. * 4;
   a.z = (int16_t)(zha << 8 | zla) / 65536. * 4;
 
   updateOrientation();
+  detectKnock();
 }
 
 // Reads the 3 gyro channels and stores them in vector g
@@ -210,13 +217,6 @@ void LSM6::readGyro(void)
   g.x = (int16_t)(xhg << 8 | xlg);
   g.y = (int16_t)(yhg << 8 | ylg);
   g.z = (int16_t)(zhg << 8 | zlg);
-}
-
-// Reads all 6 channels of the LSM6 and stores them in the object variables
-void LSM6::read(void)
-{
-  readAcc();
-  readGyro();
 }
 
 void LSM6::updateOrientation(void)
@@ -256,6 +256,13 @@ void LSM6::updateOrientation(void)
     }
 }
 
+void LSM6::detectKnock()
+{
+    if (abs(prev_a.z - a.z) > KNOCK_THRESHOLD) {
+        did_knock = true;
+    }
+}
+
 IMUOrientation LSM6::getOrientation()
 {
     uint8_t maxIndex = 0;
@@ -266,6 +273,15 @@ IMUOrientation LSM6::getOrientation()
     }
 
     return (IMUOrientation)maxIndex;
+}
+
+bool LSM6::hasBeenKnocked()
+{
+    bool shaked = did_knock;
+
+    did_knock = false;
+
+    return shaked;
 }
 
 void LSM6::debugOrientationCounters()
