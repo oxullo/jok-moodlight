@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define IMU_MAX_ORIENTATIONS    7
+
 typedef enum IMUOrientation {
     IMUORIENTATION_UNKNOWN,
     IMUORIENTATION_VERTICAL_NORMAL,
@@ -103,7 +105,7 @@ class LSM6
 
     uint8_t last_status; // status of last I2C transmission
 
-    uint16_t orientationCounters[7];
+    uint16_t orientationCounters[IMU_MAX_ORIENTATIONS];
 
     LSM6(void);
 

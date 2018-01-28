@@ -17,7 +17,7 @@
 
 CRGB leds[NUM_LEDS];
 LSM6 imu;
-Animator *animators_map[7];
+Animator *animators_map[IMU_MAX_ORIENTATIONS];
 
 
 void tester()

@@ -27,7 +27,7 @@ LSM6::LSM6(void)
   did_timeout = false;
   did_knock = false;
 
-  for (uint8_t i=0 ; i < 7 ; ++i) {
+  for (uint8_t i=0 ; i < IMU_MAX_ORIENTATIONS ; ++i) {
       orientationCounters[i] = 0;
   }
 }
@@ -249,7 +249,7 @@ void LSM6::updateOrientation(void)
         ++orientationCounters[candidate];
     }
 
-    for (uint8_t i=0 ; i < 7 ; ++i) {
+    for (uint8_t i=0 ; i < IMU_MAX_ORIENTATIONS ; ++i) {
         if (i != candidate && orientationCounters[i] != 0) {
             --orientationCounters[i];
         }
@@ -266,7 +266,7 @@ void LSM6::detectKnock()
 IMUOrientation LSM6::getOrientation()
 {
     uint8_t maxIndex = 0;
-    for (uint8_t i=1 ; i < 7 ; ++i) {
+    for (uint8_t i=1 ; i < IMU_MAX_ORIENTATIONS ; ++i) {
         if (orientationCounters[i] > 800) {
             maxIndex = i;
         }
@@ -286,7 +286,7 @@ bool LSM6::hasBeenKnocked()
 
 void LSM6::debugOrientationCounters()
 {
-    for (uint8_t i=1 ; i < 7 ; ++i) {
+    for (uint8_t i=1 ; i < IMU_MAX_ORIENTATIONS ; ++i) {
         Serial.print(i);
         Serial.print("=");
         Serial.print(orientationCounters[i]);
